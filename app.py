@@ -86,6 +86,9 @@ def connexion():
         conn.close()
 
         if utilisateur:
+            if utilisateur[4] == 1:  # Vérifier si l'utilisateur est bloqué
+                flash('Cet utilisateur est bloqué. Contactez l\'administrateur.', 'error')
+                return redirect('/connexion')
             session['nom_utilisateur'] = utilisateur[1]
             session['role'] = utilisateur[3]
             session['utilisateur_id'] = utilisateur[0]
@@ -352,6 +355,20 @@ def debloquer_utilisateur(user_id):
     conn.commit()
     conn.close()
     flash('Utilisateur débloqué avec succès !', 'success')
+    return redirect('/admin')
+
+# Route pour supprimer un utilisateur
+@app.route('/supprimer_utilisateur/<int:user_id>')
+def supprimer_utilisateur(user_id):
+    if 'nom_utilisateur' not in session or session.get('role') != 'admin':
+        return redirect('/connexion')
+
+    conn = sqlite3.connect('chorale.db')
+    c = conn.cursor()
+    c.execute("DELETE FROM utilisateurs WHERE id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+    flash('Utilisateur supprimé avec succès !', 'success')
     return redirect('/admin')
 
 # Route pour la déconnexion
