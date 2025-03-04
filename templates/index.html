@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">Chorale Saint Dominique Savio</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Accueil</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/requetes">Requêtes</a>
+                    </li>
+                    {% if session.get('role') == 'admin' %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">Admin</a>
+                    </li>
+                    {% endif %}
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/deconnexion">Déconnexion</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu de la page -->
+    <div class="container">
+        <h1 class="my-4">Gestion de la chorale Saint Dominique Savio</h1>
+        <p class="lead">Cette plateforme permet de gérer les présences des membres de la chorale lors des répétitions et animations.</p>
+
+        <!-- Formulaire pour ajouter un membre -->
+        <h2 class="mt-5">Ajouter un membre</h2>
+        <form method="POST" action="/ajouter_membre" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="prenom" class="form-control" placeholder="Prénom" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date_naissance" class="form-control" placeholder="Date de naissance" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="numero" class="form-control" placeholder="Numéro de téléphone" required>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Ajouter</button>
+        </form>
+
+        <!-- Formulaire pour enregistrer une présence -->
+        <h2 class="mt-5">Enregistrer une présence</h2>
+        <form method="POST" action="/enregistrer_presence" class="mb-4">
+            <div class="row">
+                <div class="col-md-3">
+                    <select name="membre_id" class="form-control" required>
+                        <option value="">Sélectionner un membre</option>
+                        {% for membre in membres %}
+                            <option value="{{ membre[0] }}">{{ membre[1] }} {{ membre[2] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select name="type_rencontre" class="form-control" required>
+                        <option value="">Type d'événement</option>
+                        <option value="Répétition">Répétition</option>
+                        <option value="Animation">Animation</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" name="date" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <select name="presence" class="form-control" required>
+                        <option value="">Présence</option>
+                        <option value="Présent">Présent</option>
+                        <option value="Absent">Absent</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+        </form>
+
+        <!-- Liste des membres -->
+        <h2 class="mt-5">Liste des membres</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Date de naissance</th>
+                    <th>Numéro</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for membre in membres %}
+                    <tr>
+                        <td>{{ membre[1] }}</td>
+                        <td>{{ membre[2] }}</td>
+                        <td>{{ membre[3] }}</td>
+                        <td>{{ membre[4] }}</td>
+                        <td>
+                            <a href="/supprimer_membre/{{ membre[0] }}" class="btn btn-danger btn-sm">Supprimer</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Lien vers les requêtes simples -->
+        <a href="/requetes" class="btn btn-secondary mt-3">Requêtes sur les présences</a>
+    </div>
+</body>
+</html>
